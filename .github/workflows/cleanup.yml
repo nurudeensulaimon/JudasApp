@@ -1,0 +1,33 @@
+name: Cleanup Workflow
+on: workflow_run:
+workflows: ["Deploy Team-Appreciation-WebApp-Feb-2025"] # Ensure this matches the exact deployment workflow name
+types:
+- completed # Runs ONLY after deployment finishes
+jobs: cleanup:
+runs-on: ubuntu-latest permissions:
+contents: write
+steps:
+- name: Checkout Repository
+uses: actions/checkout@v3
+- name: Delete Old Log Files run: |
+echo "🔹 Checking log directory..." if [ -d "logs/" ]; then
+echo "🔹 Cleaning log files older than 7 days..." find logs/ -type f -mtime +7 -delete
+echo "✅ Old log files deleted."
+else
+echo "⚠️ No 'logs/' directory found. Skipping log cleanup." fi
+- name: Delete Temporary Files run: |
+echo "🔹 Checking temp directory..." if [ -d "temp/" ]; then
+echo "🔹 Cleaning temp files older than 7 days..." find temp/ -type f -mtime +7 -delete
+echo "✅ Old temp files deleted."
+else
+echo "⚠️ No 'temp/' directory found. Skipping temp cleanup." fi
+- name: Delete Cache Files
+  
+run: |
+echo "🔹 Checking cache directory..." if [ -d "cache/" ]; then
+echo "🔹 Cleaning cache files older than 7 days..." find cache/ -type f -mtime +7 -delete
+echo "✅ Old cache files deleted."
+else
+echo "⚠️ No 'cache/' directory found. Skipping cache cleanup." fi
+- name: Cleanup Completed
+run: echo "✅ Cleanup completed successfully."
